@@ -1,0 +1,31 @@
+import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.functions._
+
+object DataAnalysis {
+  def main(args: Array[String]): Unit = {
+    // Создаем сессию Spark
+    val spark = SparkSession.builder()
+      .appName("DataAnalysis")
+      .master("local[*]")
+      .getOrCreate()
+
+    // Загружаем данные из CSV файла
+    val data = spark.read
+      .option("header", "true")
+      .option("inferSchema", "true")
+      .csv("data.csv")
+
+    // Выполняем анализ данных
+    val totalRows = data.count()
+    val distinctCountries = data.select("country").distinct().count()
+    val averageAge = data.select(avg("age")).first().getDouble(0)
+
+    // Выводим результаты анализа
+    println(s"Total rows: $totalRows")
+    println(s"Distinct countries: $distinctCountries")
+    println(f"Average age: $averageAge%.2f")
+
+    // Закрываем сессию Spark
+    spark.stop()
+  }
+}
